@@ -52,6 +52,8 @@ class SmoothPdfViewer {
     this.currentSearchIndex = -1;
     this.pageTextContents = new Map();
     this._searchDebounceTimer = null;
+    this._zoomDebounceTimer = null;
+    this._renderSessionId = 0;
     this.dragOverlay = document.getElementById('dragOverlay');
     this.filePermissionBanner = document.getElementById('filePermissionBanner');
     this.btnOpenExtSettings = document.getElementById('btnOpenExtSettings');
@@ -314,7 +316,7 @@ class SmoothPdfViewer {
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
         const delta = e.deltaY < 0 ? 0.15 : -0.15;
-        this.zoomStep(delta);
+        this.zoomStep(delta, true);
       }
     }, { passive: false });
 
@@ -418,9 +420,11 @@ class SmoothPdfViewer {
   async _processRenderQueue() {
     if (this._isProcessingQueue) return;
     this._isProcessingQueue = true;
+    const currentSession = this._renderSessionId;
 
     try {
       while (this._renderQueue && this._renderQueue.length > 0) {
+        if (this._renderSessionId !== currentSession) break;
         // Prioritize page closest to active viewport
         this._renderQueue.sort((a, b) => Math.abs(a - this.currentPage) - Math.abs(b - this.currentPage));
         const nextNum = this._renderQueue.shift();
@@ -429,7 +433,9 @@ class SmoothPdfViewer {
         }
       }
     } finally {
-      this._isProcessingQueue = false;
+      if (this._renderSessionId === currentSession) {
+        this._isProcessingQueue = false;
+      }
     }
   }
 
@@ -1061,28 +1067,120 @@ class SmoothPdfViewer {
     }
   }
 
-  _updatePagesLayout() {
-    const pageWidth = Math.round(this.basePageWidth * this.currentScale);
-    const pageHeight = Math.round(this.basePageHeight * this.currentScale);
+  _applyQuickZoomCss() {
+    let baseW = this.basePageWidth;
+    let baseH = this.basePageHeight;
+    if (this.rotation === 90 || this.rotation === 270) {
+      baseW = this.basePageHeight;
+      baseH = this.basePageWidth;
+    }
+    const pageWidth = Math.round(baseW * this.currentScale);
+    const pageHeight = Math.round(baseH * this.currentScale);
 
     const pageContainers = this.pagesContainer.querySelectorAll('.page-container');
     pageContainers.forEach((el) => {
       el.style.width = `${pageWidth}px`;
       el.style.height = `${pageHeight}px`;
+
+      const canvas = el.querySelector('canvas');
+      if (canvas) {
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+      }
+
       const tl = el.querySelector('.textLayer, .text-layer');
       if (tl) {
+        tl.style.width = `${pageWidth}px`;
+        tl.style.height = `${pageHeight}px`;
+        tl.style.setProperty('--scale-factor', String(this.currentScale));
+      }
+    });
+  }
+
+  _updatePagesLayout() {
+    clearTimeout(this._zoomDebounceTimer);
+
+    // 1. Advance session ID and cancel all ongoing render tasks to prevent obsolete renders
+    this._renderSessionId++;
+    this.renderingTasks.forEach((task) => {
+      try {
+        task.cancel();
+      } catch (e) {}
+    });
+    this.renderingTasks.clear();
+
+    // 2. Clear render queue and rendered page set
+    this._renderQueue = [];
+    this._isProcessingQueue = false;
+    this.renderedPages.clear();
+
+    // 3. Anchor scroll position around the currently viewed page
+    const curPageDiv = document.getElementById(`page-container-${this.currentPage}`);
+    let relativeRatio = 0;
+    if (curPageDiv && curPageDiv.offsetHeight > 0) {
+      const pageTop = curPageDiv.offsetTop;
+      const currentScroll = this.container.scrollTop;
+      relativeRatio = Math.max(0, Math.min(1, (currentScroll - pageTop) / curPageDiv.offsetHeight));
+    }
+
+    // 4. Update page dimensions and reset textLayers for fresh rendering
+    let baseW = this.basePageWidth;
+    let baseH = this.basePageHeight;
+    if (this.rotation === 90 || this.rotation === 270) {
+      baseW = this.basePageHeight;
+      baseH = this.basePageWidth;
+    }
+    const pageWidth = Math.round(baseW * this.currentScale);
+    const pageHeight = Math.round(baseH * this.currentScale);
+
+    const pageContainers = this.pagesContainer.querySelectorAll('.page-container');
+    pageContainers.forEach((el) => {
+      el.style.width = `${pageWidth}px`;
+      el.style.height = `${pageHeight}px`;
+
+      const canvas = el.querySelector('canvas');
+      if (canvas) {
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+      }
+
+      const tl = el.querySelector('.textLayer, .text-layer');
+      if (tl) {
+        tl.innerHTML = '';
+        tl.style.width = `${pageWidth}px`;
+        tl.style.height = `${pageHeight}px`;
         tl.style.setProperty('--scale-factor', String(this.currentScale));
       }
     });
 
-    this.renderedPages.clear();
+    // 5. Restore anchored scroll position so reading location does not jump
+    if (curPageDiv && curPageDiv.offsetHeight > 0) {
+      const newPageTop = curPageDiv.offsetTop;
+      const targetScroll = Math.round(newPageTop + (relativeRatio * curPageDiv.offsetHeight));
+      this.container.scrollTop = targetScroll;
+      if (this.smoothScroll) {
+        this.smoothScroll.scrollTo(targetScroll, { immediate: true });
+      }
+    }
+
+    // 6. Find all visible and buffer pages (1 full viewport above and below)
+    const containerRect = this.container.getBoundingClientRect();
+    const buffer = Math.max(window.innerHeight, this.container.clientHeight);
     const visibleEntries = Array.from(pageContainers).filter((el) => {
       const rect = el.getBoundingClientRect();
-      return rect.bottom >= 0 && rect.top <= window.innerHeight;
+      return rect.bottom >= (containerRect.top - buffer) && rect.top <= (containerRect.bottom + buffer);
     });
 
+    // Prioritize active page, then closest pages
+    visibleEntries.sort((a, b) => {
+      const aNum = parseInt(a.dataset.pageNumber, 10);
+      const bNum = parseInt(b.dataset.pageNumber, 10);
+      return Math.abs(aNum - this.currentPage) - Math.abs(bNum - this.currentPage);
+    });
+
+    // Queue all visible pages through the single orderly queue
     visibleEntries.forEach((el) => {
-      this.renderPage(parseInt(el.dataset.pageNumber, 10));
+      this.queuePageRender(parseInt(el.dataset.pageNumber, 10));
     });
   }
 
@@ -1107,8 +1205,8 @@ class SmoothPdfViewer {
 
       canvas.width = Math.floor(viewport.width * outputScale);
       canvas.height = Math.floor(viewport.height * outputScale);
-      canvas.style.width = `${Math.floor(viewport.width)}px`;
-      canvas.style.height = `${Math.floor(viewport.height)}px`;
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
 
       const ctx = canvas.getContext('2d', { alpha: false });
       ctx.save();
@@ -1156,8 +1254,12 @@ class SmoothPdfViewer {
 
   async _renderTextLayer(page, viewport, textLayerDiv) {
     try {
-      if (!textLayerDiv || textLayerDiv.children.length > 1) return; // Already rendered
+      if (!textLayerDiv) return;
+      if (textLayerDiv.dataset.renderedScale === String(viewport.scale) && textLayerDiv.children.length > 1) {
+        return; // Already rendered at this exact scale
+      }
       textLayerDiv.innerHTML = '';
+      textLayerDiv.dataset.renderedScale = String(viewport.scale);
       textLayerDiv.style.width = `${viewport.width}px`;
       textLayerDiv.style.height = `${viewport.height}px`;
       textLayerDiv.style.setProperty('--scale-factor', String(viewport.scale));
@@ -1223,7 +1325,7 @@ class SmoothPdfViewer {
     this._updatePagesLayout();
   }
 
-  zoomStep(delta) {
+  zoomStep(delta, isWheel = false) {
     let nextScale = this.currentScale + delta;
     nextScale = Math.max(0.3, Math.min(3.5, Math.round(nextScale * 10) / 10));
     this.scaleMode = String(nextScale);
@@ -1236,8 +1338,17 @@ class SmoothPdfViewer {
       this.zoomSelect.value = String(nextScale);
     }
     this.currentScale = nextScale;
-    this._updatePagesLayout();
     this._showToast(`Thu phóng: ${Math.round(this.currentScale * 100)}%`, 1000);
+
+    if (isWheel) {
+      this._applyQuickZoomCss();
+      clearTimeout(this._zoomDebounceTimer);
+      this._zoomDebounceTimer = setTimeout(() => {
+        this._updatePagesLayout();
+      }, 120);
+    } else {
+      this._updatePagesLayout();
+    }
   }
 
   rotate() {
