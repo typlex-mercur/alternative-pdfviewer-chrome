@@ -209,8 +209,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       url: request.url,
       saveAs: false
     };
-    if (request.filename) {
-      downloadOptions.filename = request.filename;
+    // Sanitize filename: reject boolean-like values that aren't real filenames
+    const BOOLEAN_LIKE = ['true', 'false', 'download', 'undefined', 'null'];
+    const cleanFilename = (request.filename || '').trim();
+    if (cleanFilename && !BOOLEAN_LIKE.includes(cleanFilename.toLowerCase())) {
+      downloadOptions.filename = cleanFilename;
     }
     chrome.downloads.download(downloadOptions, (downloadId) => {
       if (chrome.runtime.lastError) {

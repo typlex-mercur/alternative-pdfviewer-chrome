@@ -134,24 +134,50 @@
           return;
         }
 
+        // Skip interception for URLs with native download parameters
+        // (e.g. Canvas LMS download_frd=1) — let browser handle natively
+        if (href) {
+          const hrefLower = href.toLowerCase();
+          if (
+            hrefLower.includes('download_frd=') ||
+            hrefLower.includes('response-content-disposition') ||
+            hrefLower.includes('disposition=attachment') ||
+            (hrefLower.includes('/files/') && hrefLower.includes('/download'))
+          ) {
+            return;
+          }
+        }
+
         try {
           const absoluteUrl = href ? new URL(href, window.location.href).href : null;
           if (absoluteUrl) {
             e.preventDefault();
             e.stopPropagation();
 
-            let filename = downloadAttrVal;
+            // Sanitize download attribute: ignore boolean-like values
+            const BOOLEAN_LIKE = ['true', 'false', 'download', 'undefined', 'null', ''];
+            let filename = '';
+            if (downloadAttrVal && !BOOLEAN_LIKE.includes(downloadAttrVal.toLowerCase())) {
+              filename = downloadAttrVal;
+            }
+
+            // Fallback: extract from title or text if it looks like a .pdf filename
             if (!filename && targetEl) {
               const title = targetEl.getAttribute('title');
               if (title && title.toLowerCase().endsWith('.pdf')) {
                 filename = title;
+              } else {
+                const text = (targetEl.innerText || targetEl.textContent || '').trim();
+                if (text && text.toLowerCase().endsWith('.pdf') && text.length < 260) {
+                  filename = text;
+                }
               }
             }
 
             chrome.runtime.sendMessage({
               action: 'downloadPdfDirectly',
               url: absoluteUrl,
-              filename: filename || ''
+              filename: filename
             });
 
             return;
