@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>SmoothPDF - Cài đặt</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <div class="header">
+      <div class="logo">
+        <span class="badge">Smooth</span><span class="title">PDF</span>
+      </div>
+      <div class="status-indicator active" title="Đang kích hoạt"></div>
+    </div>
+
+    <!-- Cảnh báo nếu chưa bật quyền file:/// -->
+    <div id="fileAccessWarning" class="file-warning hidden">
+      <div class="warning-title">⚠️ Chưa bật quyền mở file từ máy</div>
+      <p>Để kéo thả file PDF vào Chrome mở mượt mà, bạn cần bật mục <b>"Cho phép truy cập vào các URL của tệp"</b>.</p>
+      <button id="btnFixFileAccess" class="btn-fix">Bật quyền ngay &rarr;</button>
+    </div>
+
+    <div class="section-title">Cài đặt cuộn & hiển thị</div>
+
+    <div class="setting-row">
+      <div class="setting-info">
+        <label for="autoRedirectToggle">Tự động bắt link PDF</label>
+        <span>Tự động mở file .pdf bằng SmoothPDF</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="autoRedirectToggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-info">
+        <label for="smoothScrollToggle">Cuộn mượt quán tính</label>
+        <span>Trải nghiệm 60-120 FPS như Edge</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="smoothScrollToggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-row slider-row">
+      <div class="setting-info">
+        <label for="dampingSlider">Độ mượt cuộn (Damping)</label>
+        <span id="dampingLabel">Mượt mà Edge-like (0.18)</span>
+      </div>
+      <input type="range" id="dampingSlider" min="0.06" max="0.25" step="0.01" value="0.18">
+    </div>
+
+    <div class="action-buttons">
+      <button id="btnOpenViewer" class="btn-primary">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+        Mở Trình Đọc SmoothPDF
+      </button>
+    </div>
+
+    <div class="tip-box">
+      <strong>💡 Mẹo mở file nhanh:</strong>
+      <p>Bấm nút <b>Mở Trình Đọc SmoothPDF</b> ở trên, sau đó kéo thả bất kỳ file PDF nào vào tab vừa mở để đọc ngay lập tức!</p>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

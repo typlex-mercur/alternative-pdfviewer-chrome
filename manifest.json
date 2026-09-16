@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "name": "SmoothPDF",
+  "version": "1.1.0",
+  "description": "High-performance Edge-like PDF viewer for Chrome. 60-120 FPS momentum smooth scrolling, instant zoom, dark mode, and in-page search.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "declarativeNetRequest",
+    "storage",
+    "tabs",
+    "webNavigation",
+    "contextMenus",
+    "downloads"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "file:///*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "SmoothPDF"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "viewer/viewer.html",
+        "viewer/viewer.css",
+        "viewer/viewer.js",
+        "viewer/smooth-scroll.js",
+        "viewer/lib/*",
+        "icons/*"
+      ],
+      "matches": [
+        "<all_urls>",
+        "file:///*"
+      ]
+    }
+  ],
+  "short_name": "SmoothPDF"
+}

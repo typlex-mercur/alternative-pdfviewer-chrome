@@ -1,0 +1,442 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 4 0 R 5 0 R 6 0 R 7 0 R] /Count 5 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 8 0 R /Resources << /Font << /F1 13 0 R >> >> >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 9 0 R /Resources << /Font << /F1 13 0 R >> >> >>
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 10 0 R /Resources << /Font << /F1 13 0 R >> >> >>
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 11 0 R /Resources << /Font << /F1 13 0 R >> >> >>
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 12 0 R /Resources << /Font << /F1 13 0 R >> >> >>
+endobj
+8 0 obj
+<< /Length 3303 >>
+stream
+BT
+/F1 28 Tf
+50 780 Td
+(SmoothPDF Test Document - Page 1 of 5) Tj
+/F1 16 Tf
+0 -50 Td
+(This document verifies 60-120 FPS buttery smooth scrolling.) Tj
+0 -30 Td
+(Notice how the inertia momentum feels fluid and responsive like Microsoft Edge.) Tj
+0 -40 Td
+(Features verified on this page:) Tj
+0 -25 Td
+(- Sub-pixel exponential damping interpolation) Tj
+0 -20 Td
+(- Off-main-thread PDF.js rendering in Web Worker) Tj
+0 -20 Td
+(- Zero jank / zero checkerboard blanking during scrolling) Tj
+0 -20 Td
+(- GPU instant zoom with Ctrl + Mouse Wheel) Tj
+0 -20 Td
+(- Dark Mode / Sepia eye-care reading mode) Tj
+0 -60 Td
+(Section content block for Page 1:) Tj
+/F1 12 Tf
+0 -18 Td
+(Line 1: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 2: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 3: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 4: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 5: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 6: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 7: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 8: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 9: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 10: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 11: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 12: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 13: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 14: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 15: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 16: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 17: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 18: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 19: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 20: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 21: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 22: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 23: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 24: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+ET
+0.20 0.40 0.80 rg 50 150 495 20 re f
+endstream
+endobj
+9 0 obj
+<< /Length 3303 >>
+stream
+BT
+/F1 28 Tf
+50 780 Td
+(SmoothPDF Test Document - Page 2 of 5) Tj
+/F1 16 Tf
+0 -50 Td
+(This document verifies 60-120 FPS buttery smooth scrolling.) Tj
+0 -30 Td
+(Notice how the inertia momentum feels fluid and responsive like Microsoft Edge.) Tj
+0 -40 Td
+(Features verified on this page:) Tj
+0 -25 Td
+(- Sub-pixel exponential damping interpolation) Tj
+0 -20 Td
+(- Off-main-thread PDF.js rendering in Web Worker) Tj
+0 -20 Td
+(- Zero jank / zero checkerboard blanking during scrolling) Tj
+0 -20 Td
+(- GPU instant zoom with Ctrl + Mouse Wheel) Tj
+0 -20 Td
+(- Dark Mode / Sepia eye-care reading mode) Tj
+0 -60 Td
+(Section content block for Page 2:) Tj
+/F1 12 Tf
+0 -18 Td
+(Line 1: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 2: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 3: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 4: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 5: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 6: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 7: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 8: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 9: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 10: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 11: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 12: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 13: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 14: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 15: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 16: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 17: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 18: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 19: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 20: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 21: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 22: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 23: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 24: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+ET
+0.39 0.40 0.80 rg 50 150 495 20 re f
+endstream
+endobj
+10 0 obj
+<< /Length 3303 >>
+stream
+BT
+/F1 28 Tf
+50 780 Td
+(SmoothPDF Test Document - Page 3 of 5) Tj
+/F1 16 Tf
+0 -50 Td
+(This document verifies 60-120 FPS buttery smooth scrolling.) Tj
+0 -30 Td
+(Notice how the inertia momentum feels fluid and responsive like Microsoft Edge.) Tj
+0 -40 Td
+(Features verified on this page:) Tj
+0 -25 Td
+(- Sub-pixel exponential damping interpolation) Tj
+0 -20 Td
+(- Off-main-thread PDF.js rendering in Web Worker) Tj
+0 -20 Td
+(- Zero jank / zero checkerboard blanking during scrolling) Tj
+0 -20 Td
+(- GPU instant zoom with Ctrl + Mouse Wheel) Tj
+0 -20 Td
+(- Dark Mode / Sepia eye-care reading mode) Tj
+0 -60 Td
+(Section content block for Page 3:) Tj
+/F1 12 Tf
+0 -18 Td
+(Line 1: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 2: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 3: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 4: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 5: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 6: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 7: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 8: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 9: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 10: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 11: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 12: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 13: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 14: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 15: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 16: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 17: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 18: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 19: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 20: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 21: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 22: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 23: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 24: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+ET
+0.59 0.40 0.80 rg 50 150 495 20 re f
+endstream
+endobj
+11 0 obj
+<< /Length 3303 >>
+stream
+BT
+/F1 28 Tf
+50 780 Td
+(SmoothPDF Test Document - Page 4 of 5) Tj
+/F1 16 Tf
+0 -50 Td
+(This document verifies 60-120 FPS buttery smooth scrolling.) Tj
+0 -30 Td
+(Notice how the inertia momentum feels fluid and responsive like Microsoft Edge.) Tj
+0 -40 Td
+(Features verified on this page:) Tj
+0 -25 Td
+(- Sub-pixel exponential damping interpolation) Tj
+0 -20 Td
+(- Off-main-thread PDF.js rendering in Web Worker) Tj
+0 -20 Td
+(- Zero jank / zero checkerboard blanking during scrolling) Tj
+0 -20 Td
+(- GPU instant zoom with Ctrl + Mouse Wheel) Tj
+0 -20 Td
+(- Dark Mode / Sepia eye-care reading mode) Tj
+0 -60 Td
+(Section content block for Page 4:) Tj
+/F1 12 Tf
+0 -18 Td
+(Line 1: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 2: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 3: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 4: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 5: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 6: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 7: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 8: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 9: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 10: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 11: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 12: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 13: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 14: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 15: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 16: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 17: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 18: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 19: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 20: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 21: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 22: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 23: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 24: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+ET
+0.78 0.40 0.80 rg 50 150 495 20 re f
+endstream
+endobj
+12 0 obj
+<< /Length 3303 >>
+stream
+BT
+/F1 28 Tf
+50 780 Td
+(SmoothPDF Test Document - Page 5 of 5) Tj
+/F1 16 Tf
+0 -50 Td
+(This document verifies 60-120 FPS buttery smooth scrolling.) Tj
+0 -30 Td
+(Notice how the inertia momentum feels fluid and responsive like Microsoft Edge.) Tj
+0 -40 Td
+(Features verified on this page:) Tj
+0 -25 Td
+(- Sub-pixel exponential damping interpolation) Tj
+0 -20 Td
+(- Off-main-thread PDF.js rendering in Web Worker) Tj
+0 -20 Td
+(- Zero jank / zero checkerboard blanking during scrolling) Tj
+0 -20 Td
+(- GPU instant zoom with Ctrl + Mouse Wheel) Tj
+0 -20 Td
+(- Dark Mode / Sepia eye-care reading mode) Tj
+0 -60 Td
+(Section content block for Page 5:) Tj
+/F1 12 Tf
+0 -18 Td
+(Line 1: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 2: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 3: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 4: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 5: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 6: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 7: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 8: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 9: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 10: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 11: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 12: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 13: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 14: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 15: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 16: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 17: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 18: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 19: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 20: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 21: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 22: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 23: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+0 -18 Td
+(Line 24: The quick brown fox jumps over the lazy dog. Smooth momentum scrolling at 120Hz test.) Tj
+ET
+0.98 0.40 0.80 rg 50 150 495 20 re f
+endstream
+endobj
+13 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 14
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000145 00000 n 
+0000000272 00000 n 
+0000000399 00000 n 
+0000000527 00000 n 
+0000000655 00000 n 
+0000000783 00000 n 
+0000004137 00000 n 
+0000007491 00000 n 
+0000010846 00000 n 
+0000014201 00000 n 
+0000017556 00000 n 
+trailer
+<< /Size 14 /Root 1 0 R >>
+startxref
+17627
+%%EOF
