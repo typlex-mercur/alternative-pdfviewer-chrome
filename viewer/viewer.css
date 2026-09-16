@@ -42,6 +42,23 @@ body.theme-dark {
   --page-bg: #ffffff;  /* True paper white */
 }
 
+/* Charcoal Theme - Harmonious with #3C3C3C, balanced eye comfort, ZERO color inversion */
+body.theme-charcoal {
+  color-scheme: dark;
+  --bg-primary: #3c3c3c;
+  --bg-surface: #3c3c3c;
+  --bg-toolbar: #3c3c3c;
+  --bg-sidebar: #333333;
+  --border-color: #4e4e4e;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --accent-color: #818cf8;
+  --accent-hover: #a5b4fc;
+  --shadow-page: 0 8px 26px rgba(0, 0, 0, 0.45);
+  --page-filter: none; /* Authentic PDF colors, no negative/inverted colors! */
+  --page-bg: #ffffff;  /* True paper white */
+}
+
 /* Global utility */
 .hidden {
   display: none !important;
@@ -104,7 +121,8 @@ body, html {
   margin-left: 6px;
 }
 
-body.theme-dark .document-title-wrapper {
+body.theme-dark .document-title-wrapper,
+body.theme-charcoal .document-title-wrapper {
   color: #cbd5e1;
 }
 
@@ -130,6 +148,11 @@ body.theme-dark .document-title-wrapper {
 
 body.theme-dark .btn-icon:hover {
   background: #272930;
+  color: #f1f5f9;
+}
+
+body.theme-charcoal .btn-icon:hover {
+  background: #4a4a4a;
   color: #f1f5f9;
 }
 
@@ -160,6 +183,12 @@ body.theme-dark .zoom-group {
   border-color: #2f3138;
 }
 
+body.theme-charcoal .page-nav-group,
+body.theme-charcoal .zoom-group {
+  background: #2e2e2e;
+  border-color: #484848;
+}
+
 .page-number-box {
   display: flex;
   align-items: center;
@@ -187,8 +216,16 @@ body.theme-dark .page-number-box input {
   border-color: #383a42;
 }
 
+body.theme-charcoal .page-number-box input {
+  background: #262626;
+  color: #f1f5f9;
+  border-color: #4e4e4e;
+}
+
 body.theme-dark .page-separator,
-body.theme-dark #numPages {
+body.theme-dark #numPages,
+body.theme-charcoal .page-separator,
+body.theme-charcoal #numPages {
   color: #94a3b8;
 }
 
@@ -235,6 +272,18 @@ body.theme-dark #zoomSelect {
 
 body.theme-dark #zoomSelect option {
   background-color: #1e1f24;
+  color: #f1f5f9;
+}
+
+body.theme-charcoal #zoomSelect {
+  color-scheme: dark;
+  background-color: #262626;
+  color: #f1f5f9;
+  border-color: #4e4e4e;
+}
+
+body.theme-charcoal #zoomSelect option {
+  background-color: #3c3c3c;
   color: #f1f5f9;
 }
 
@@ -336,6 +385,11 @@ body.theme-dark .sidebar-tabs {
   border-color: #2a2c32;
 }
 
+body.theme-charcoal .sidebar-tabs {
+  background: #2b2b2b;
+  border-color: #484848;
+}
+
 .sidebar-tab {
   flex: 1;
   padding: 8px 12px;
@@ -389,6 +443,10 @@ body.theme-dark .thumbnail-item:hover {
   background: #272930;
 }
 
+body.theme-charcoal .thumbnail-item:hover {
+  background: #4a4a4a;
+}
+
 .thumbnail-item.active {
   background: rgba(79, 70, 229, 0.12);
   outline: 2px solid var(--accent-color);
@@ -428,6 +486,10 @@ body.theme-dark .thumbnail-item:hover {
 
 body.theme-dark .outline-item:hover {
   background: #272930;
+}
+
+body.theme-charcoal .outline-item:hover {
+  background: #4a4a4a;
 }
 
 .empty-outline {
@@ -589,7 +651,8 @@ body.theme-dark .outline-item:hover {
   color: transparent;
 }
 
-body.theme-dark .textLayer ::selection, body.theme-dark .text-layer ::selection {
+body.theme-dark .textLayer ::selection, body.theme-dark .text-layer ::selection,
+body.theme-charcoal .textLayer ::selection, body.theme-charcoal .text-layer ::selection {
   background: rgba(99, 102, 241, 0.45);
   color: transparent;
 }
@@ -758,6 +821,22 @@ body.theme-dark #findMatchCount {
   color: #94a3b8;
 }
 
+body.theme-charcoal .find-bar {
+  background: #333333;
+  border-color: #4e4e4e;
+  color: #f1f5f9;
+}
+
+body.theme-charcoal .find-bar input {
+  background: #262626;
+  color: #f1f5f9;
+  border-color: #4e4e4e;
+}
+
+body.theme-charcoal #findMatchCount {
+  color: #94a3b8;
+}
+
 .find-bar input:focus {
   border-color: var(--accent-color);
 }
@@ -807,14 +886,18 @@ body.theme-dark #findMatchCount {
 }
 
 body.theme-dark .textLayer mark.find-highlight,
-body.theme-dark .text-layer mark.find-highlight {
+body.theme-dark .text-layer mark.find-highlight,
+body.theme-charcoal .textLayer mark.find-highlight,
+body.theme-charcoal .text-layer mark.find-highlight {
   background-color: rgba(250, 204, 21, 0.45) !important;
   color: transparent !important;
   box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.3);
 }
 
 body.theme-dark .textLayer mark.find-highlight.active,
-body.theme-dark .text-layer mark.find-highlight.active {
+body.theme-dark .text-layer mark.find-highlight.active,
+body.theme-charcoal .textLayer mark.find-highlight.active,
+body.theme-charcoal .text-layer mark.find-highlight.active {
   background-color: rgba(251, 146, 60, 0.85) !important;
   outline: 2px solid #fb923c !important;
   box-shadow: 0 0 10px rgba(251, 146, 60, 0.7) !important;

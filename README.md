@@ -1,4 +1,4 @@
-﻿# SmoothPDF - Alternative PDF Viewer for Google Chrome
+# SmoothPDF - Alternative PDF Viewer for Google Chrome
 
 > **A high-performance, Edge-like buttery smooth PDF reader for Google Chrome.**
 > Featuring 60–120 FPS momentum scrolling, GPU-accelerated instant zooming, distraction-free minimalist UI, full-text in-page search, authentic dark/sepia reading modes, and intelligent direct-download protection.
@@ -32,8 +32,9 @@
    - Renders only visible pages with smart lookahead buffering.
    - Off-screen canvases and rendered tasks are automatically managed to prevent memory leaks, allowing documents with thousands of pages to open smoothly with minimal RAM usage.
 
-4. **Authentic Dark Mode & Sepia Themes**
-   - Clean, contrast-accurate Dark Mode and Sepia Paper modes.
+4. **Authentic Dark, Light & Charcoal (#3C3C3C) Themes**
+   - Instant 3-mode switching: **Light**, **Dark**, and **Charcoal (#3C3C3C)**.
+   - The Charcoal (#3C3C3C) mode provides balanced, low-glare reading comfort mimicking Adobe Acrobat & professional dark workstations.
    - Preserves original PDF colors without inverted-negative distortion on images and charts.
 
 5. **In-Page Full-Text Search Engine (Ctrl + F)**
@@ -61,7 +62,7 @@
 | `Ctrl + F` | Open in-page search bar |
 | `Enter` / `Shift + Enter` | Go to Next / Previous search match |
 | `Esc` | Close search bar & clear highlights |
-| `D` | Cycle theme: **Light &rarr; Dark &rarr; Sepia** |
+| `D` | Cycle theme: **Light &rarr; Dark &rarr; Charcoal (#3C3C3C)** |
 | `R` | Rotate page clockwise 90° |
 | `PageUp` / `PageDown` / `Space` | Smooth scroll by page |
 | `Home` / `End` | Smooth jump to start / end of document |

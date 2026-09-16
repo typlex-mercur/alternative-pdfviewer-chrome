@@ -57,8 +57,8 @@ class SmoothPdfViewer {
     this.btnOpenExtSettings = document.getElementById('btnOpenExtSettings');
     this.btnCloseBanner = document.getElementById('btnCloseBanner');
 
-    // Themes: Clean Light and Dark (Authentic PDF colors)
-    this.themes = ['theme-light', 'theme-dark'];
+    // Themes: Clean Light, Dark, and Charcoal #3C3C3C (Authentic PDF colors)
+    this.themes = ['theme-light', 'theme-dark', 'theme-charcoal'];
     this.currentThemeIndex = 0;
 
     // Initialize Smooth Scroll Engine with Edge-like responsive physics
@@ -495,7 +495,8 @@ class SmoothPdfViewer {
 
     const themeNames = {
       'theme-light': 'Giao diện Sáng',
-      'theme-dark': 'Giao diện Tối'
+      'theme-dark': 'Giao diện Tối',
+      'theme-charcoal': 'Giao diện Than chì (#3C3C3C)'
     };
     this._showToast(themeNames[newTheme] || newTheme, 1500);
   }
