@@ -1601,7 +1601,11 @@ class SmoothPdfViewer {
         }
       } else {
         this._hideSelectionMenu();
-        const mark = e.target.closest('.highlight-mark');
+        let mark = e.target.closest('.highlight-mark');
+        if (!mark && e.clientX !== undefined && e.clientY !== undefined) {
+          const elements = document.elementsFromPoint(e.clientX, e.clientY);
+          mark = elements.find(el => el.classList && el.classList.contains('highlight-mark'));
+        }
         if (mark) {
           this._showHighlightActionMenu(mark);
         } else {
