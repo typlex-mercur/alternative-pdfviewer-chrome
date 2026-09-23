@@ -59,6 +59,21 @@ class SmoothPdfViewer {
     this.btnOpenExtSettings = document.getElementById('btnOpenExtSettings');
     this.btnCloseBanner = document.getElementById('btnCloseBanner');
 
+    // Highlight & Reading Position State
+    this.btnHighlightTool = document.getElementById('btnHighlightTool');
+    this.selectionMenu = document.getElementById('selectionMenu');
+    this.btnApplyHighlight = document.getElementById('btnApplyHighlight');
+    this.btnCopySelection = document.getElementById('btnCopySelection');
+    this.highlightActionMenu = document.getElementById('highlightActionMenu');
+    this.btnDeleteHighlight = document.getElementById('btnDeleteHighlight');
+
+    this.highlights = [];
+    this.activeHighlightId = null;
+    this.activeHighlightColor = '#ffe066';
+    this.isHighlightToolActive = false;
+    this.docFingerprint = null;
+    this._savePosDebounce = null;
+
     // Themes: Clean Light, Dark, and Charcoal #3C3C3C (Authentic PDF colors)
     this.themes = ['theme-light', 'theme-dark', 'theme-charcoal'];
     this.currentThemeIndex = 0;
@@ -144,7 +159,11 @@ class SmoothPdfViewer {
     });
 
     // Monotonic scroll listener to track active page number smoothly
-    this.container.addEventListener('scroll', () => this._onContainerScroll(), { passive: true });
+    this.container.addEventListener('scroll', () => {
+      this._hideSelectionMenu();
+      this._hideHighlightActionMenu();
+      this._onContainerScroll();
+    }, { passive: true });
 
     // Zoom
     document.getElementById('btnZoomIn').addEventListener('click', () => this.zoomStep(0.2));
@@ -165,6 +184,81 @@ class SmoothPdfViewer {
     document.getElementById('btnToggleSidebar').addEventListener('click', () => this.toggleSidebar());
     document.getElementById('tabThumbnails').addEventListener('click', () => this.switchSidebarTab('thumbnails'));
     document.getElementById('tabOutline').addEventListener('click', () => this.switchSidebarTab('outline'));
+
+    // Highlight Tool Toggle
+    if (this.btnHighlightTool) {
+      this.btnHighlightTool.addEventListener('click', () => {
+        const sel = window.getSelection();
+        if (sel && sel.toString().trim().length > 0) {
+          this.applyHighlightToSelection();
+        } else {
+          this.toggleHighlightTool();
+        }
+      });
+    }
+
+    // Selection Menu (Floating Pill) Actions
+    if (this.btnApplyHighlight) {
+      this.btnApplyHighlight.addEventListener('click', () => {
+        this.applyHighlightToSelection(this.activeHighlightColor);
+      });
+    }
+
+    if (this.btnCopySelection) {
+      this.btnCopySelection.addEventListener('click', async () => {
+        const sel = window.getSelection();
+        if (sel) {
+          const text = sel.toString().trim();
+          if (text) {
+            try {
+              await navigator.clipboard.writeText(text);
+              this._showToast('Đã sao chép văn bản', 1200);
+            } catch (err) {
+              document.execCommand('copy');
+              this._showToast('Đã sao chép văn bản', 1200);
+            }
+          }
+        }
+        this._hideSelectionMenu();
+      });
+    }
+
+    if (this.selectionMenu) {
+      const dots = this.selectionMenu.querySelectorAll('.color-dot');
+      dots.forEach(dot => {
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const color = dot.dataset.color;
+          this.activeHighlightColor = color;
+          dots.forEach(d => d.classList.toggle('active', d === dot));
+          this.applyHighlightToSelection(color);
+        });
+      });
+    }
+
+    // Highlight Action Menu (Delete / Change Color) Actions
+    if (this.btnDeleteHighlight) {
+      this.btnDeleteHighlight.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (this.activeHighlightId) {
+          this.deleteHighlight(this.activeHighlightId);
+          this._hideHighlightActionMenu();
+        }
+      });
+    }
+
+    if (this.highlightActionMenu) {
+      const dots = this.highlightActionMenu.querySelectorAll('.color-dot');
+      dots.forEach(dot => {
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (this.activeHighlightId) {
+            this.changeHighlightColor(this.activeHighlightId, dot.dataset.color);
+            dots.forEach(d => d.classList.toggle('active', d === dot));
+          }
+        });
+      });
+    }
 
     // Search (Ctrl + F)
     document.getElementById('btnSearch').addEventListener('click', () => this.toggleFindBar());
@@ -307,6 +401,15 @@ class SmoothPdfViewer {
           if (document.activeElement.tagName !== 'INPUT') {
             this.toggleTheme();
           }
+        } else if (e.key === 'h' || e.key === 'H') {
+          if (document.activeElement.tagName !== 'INPUT') {
+            const sel = window.getSelection();
+            if (sel && sel.toString().trim().length > 0) {
+              this.applyHighlightToSelection();
+            } else {
+              this.toggleHighlightTool();
+            }
+          }
         }
       }
     });
@@ -355,11 +458,27 @@ class SmoothPdfViewer {
       e.preventDefault();
     });
 
-    window.addEventListener('mouseup', () => {
-      document.querySelectorAll('.endOfContent.active').forEach((end) => {
-        end.style.top = '';
-        end.classList.remove('active');
-      });
+    // Mouseup for text selection & highlight clicking
+    window.addEventListener('mouseup', (e) => this._onMouseUp(e));
+
+    // Mousedown outside to dismiss floating menus
+    document.addEventListener('mousedown', (e) => {
+      if (!e.target.closest('#selectionMenu') && !e.target.closest('#highlightActionMenu')) {
+        if (!e.target.closest('.highlight-mark')) {
+          this._hideHighlightActionMenu();
+        }
+        this._hideSelectionMenu();
+      }
+    });
+
+    // Auto-save reading position on exit / visibility change
+    window.addEventListener('beforeunload', () => {
+      this._saveReadingPosition();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        this._saveReadingPosition();
+      }
     });
 
     // Clean up copied text (strip null bytes)
@@ -446,6 +565,11 @@ class SmoothPdfViewer {
       this._updateCurrentPageNumber();
       this._scrollRafId = null;
     });
+
+    clearTimeout(this._savePosDebounce);
+    this._savePosDebounce = setTimeout(() => {
+      this._saveReadingPosition();
+    }, 600);
   }
 
   _updateCurrentPageNumber() {
@@ -1001,8 +1125,17 @@ class SmoothPdfViewer {
     // Compute scale
     this._recomputeScale();
 
+    // Fingerprint identification for persistent data
+    this.docFingerprint = pdfDoc.fingerprint || (Array.isArray(pdfDoc.fingerprints) ? pdfDoc.fingerprints[0] : null);
+
     // Build virtual page skeletons
     await this._buildPagePlaceholders();
+
+    // Load and render persistent highlights (both previous and new sessions)
+    await this._loadHighlights();
+
+    // Restore last reading position from previous session
+    await this._loadSavedPosition();
 
     // Load outline (TOC)
     this._loadOutline();
@@ -1048,6 +1181,11 @@ class SmoothPdfViewer {
       canvas.className = 'page-canvas';
       pageDiv.appendChild(canvas);
 
+      const hlLayer = document.createElement('div');
+      hlLayer.className = 'highlight-layer';
+      hlLayer.id = `highlight-layer-${i}`;
+      pageDiv.appendChild(hlLayer);
+
       const textLayer = document.createElement('div');
       textLayer.className = 'textLayer text-layer';
       textLayer.style.setProperty('--scale-factor', String(this.currentScale));
@@ -1057,6 +1195,9 @@ class SmoothPdfViewer {
     }
 
     this.pagesContainer.appendChild(frag);
+
+    // Re-render any existing highlights into the newly created page containers
+    this._renderAllHighlights();
 
     // Attach intersection observer for rendering only
     for (let i = 1; i <= this.totalPages; i++) {
@@ -1433,6 +1574,387 @@ class SmoothPdfViewer {
       const ctx = canvas.getContext('2d');
       await page.render({ canvasContext: ctx, viewport: viewport }).promise;
     } catch (e) {}
+  }
+
+  // Highlight and Reading Position Engine
+
+  _onMouseUp(e) {
+    document.querySelectorAll('.endOfContent.active').forEach((end) => {
+      end.style.top = '';
+      end.classList.remove('active');
+    });
+
+    if (e.target.closest('#selectionMenu') || e.target.closest('#highlightActionMenu')) {
+      return;
+    }
+
+    setTimeout(() => {
+      const sel = window.getSelection();
+      const text = sel ? sel.toString().trim() : '';
+
+      if (text.length > 0) {
+        this._hideHighlightActionMenu();
+        if (this.isHighlightToolActive) {
+          this.applyHighlightToSelection();
+        } else {
+          this._showSelectionMenu(sel);
+        }
+      } else {
+        this._hideSelectionMenu();
+        const mark = e.target.closest('.highlight-mark');
+        if (mark) {
+          this._showHighlightActionMenu(mark);
+        } else {
+          this._hideHighlightActionMenu();
+        }
+      }
+    }, 20);
+  }
+
+  toggleHighlightTool() {
+    this.isHighlightToolActive = !this.isHighlightToolActive;
+    if (this.btnHighlightTool) {
+      this.btnHighlightTool.classList.toggle('active', this.isHighlightToolActive);
+    }
+    this._showToast(this.isHighlightToolActive ? 'Chế độ Highlight: Đang bật (Bôi đen để tô sáng)' : 'Chế độ Highlight: Đã tắt', 1500);
+  }
+
+  applyHighlightToSelection(color) {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+    const range = sel.getRangeAt(0);
+    const text = sel.toString().trim();
+    if (!text) return;
+
+    const useColor = color || this.activeHighlightColor || '#ffe066';
+    this.addHighlight(range, useColor);
+
+    sel.removeAllRanges();
+    this._hideSelectionMenu();
+  }
+
+  addHighlight(range, color = '#ffe066') {
+    if (!range) return;
+    const clientRects = Array.from(range.getClientRects());
+    if (clientRects.length === 0) return;
+
+    const text = range.toString().trim();
+    if (!text) return;
+
+    const pageMap = new Map();
+
+    for (const rect of clientRects) {
+      if (rect.width < 1 || rect.height < 1) continue;
+
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+
+      let foundPageNum = null;
+      let foundPageRect = null;
+
+      const pages = this.pagesContainer.querySelectorAll('.page-container');
+      for (const p of pages) {
+        const pr = p.getBoundingClientRect();
+        if (cy >= pr.top - 2 && cy <= pr.bottom + 2 && cx >= pr.left - 20 && cx <= pr.right + 20) {
+          foundPageNum = parseInt(p.dataset.pageNumber, 10);
+          foundPageRect = pr;
+          break;
+        }
+      }
+
+      if (!foundPageNum || !foundPageRect || foundPageRect.width <= 0 || foundPageRect.height <= 0) continue;
+
+      const relBox = {
+        left: Math.max(0, Math.min(1, (rect.left - foundPageRect.left) / foundPageRect.width)),
+        top: Math.max(0, Math.min(1, (rect.top - foundPageRect.top) / foundPageRect.height)),
+        width: Math.max(0, Math.min(1, rect.width / foundPageRect.width)),
+        height: Math.max(0, Math.min(1, rect.height / foundPageRect.height))
+      };
+
+      if (!pageMap.has(foundPageNum)) {
+        pageMap.set(foundPageNum, []);
+      }
+      pageMap.get(foundPageNum).push(relBox);
+    }
+
+    if (pageMap.size === 0) return;
+
+    const now = Date.now();
+    for (const [pageNum, rects] of pageMap.entries()) {
+      const hl = {
+        id: 'hl_' + now + '_' + Math.random().toString(36).substring(2, 8),
+        pageNum: pageNum,
+        color: color,
+        rects: rects,
+        text: text,
+        createdAt: now
+      };
+      this.highlights.push(hl);
+      this._renderSingleHighlight(hl);
+    }
+
+    this._saveHighlights();
+    this._showToast('Đã thêm highlight', 1200);
+  }
+
+  _renderSingleHighlight(hl) {
+    if (!hl || !hl.pageNum || !hl.rects) return;
+    const layer = document.getElementById(`highlight-layer-${hl.pageNum}`);
+    if (!layer) return;
+
+    if (layer.querySelector(`[data-highlight-id="${hl.id}"]`)) return;
+
+    hl.rects.forEach((box) => {
+      const mark = document.createElement('div');
+      mark.className = 'highlight-mark';
+      mark.dataset.highlightId = hl.id;
+      mark.style.left = `${(box.left * 100).toFixed(3)}%`;
+      mark.style.top = `${(box.top * 100).toFixed(3)}%`;
+      mark.style.width = `${(box.width * 100).toFixed(3)}%`;
+      mark.style.height = `${(box.height * 100).toFixed(3)}%`;
+      mark.style.backgroundColor = hl.color || '#ffe066';
+      layer.appendChild(mark);
+    });
+  }
+
+  _renderAllHighlights() {
+    if (!this.highlights || this.highlights.length === 0) return;
+    const allLayers = this.pagesContainer.querySelectorAll('.highlight-layer');
+    allLayers.forEach(l => { l.innerHTML = ''; });
+
+    this.highlights.forEach(hl => {
+      this._renderSingleHighlight(hl);
+    });
+  }
+
+  deleteHighlight(id) {
+    if (!id) return;
+    const idx = this.highlights.findIndex(h => h.id === id);
+    if (idx !== -1) {
+      this.highlights.splice(idx, 1);
+    }
+    const marks = this.pagesContainer.querySelectorAll(`[data-highlight-id="${id}"]`);
+    marks.forEach(m => m.remove());
+
+    this._saveHighlights();
+    this._showToast('Đã xóa highlight', 1200);
+  }
+
+  changeHighlightColor(id, newColor) {
+    if (!id || !newColor) return;
+    const hl = this.highlights.find(h => h.id === id);
+    if (!hl) return;
+    hl.color = newColor;
+
+    const marks = this.pagesContainer.querySelectorAll(`[data-highlight-id="${id}"]`);
+    marks.forEach(m => {
+      m.style.backgroundColor = newColor;
+    });
+
+    this._saveHighlights();
+    this._showToast('Đã đổi màu highlight', 1000);
+  }
+
+  _showSelectionMenu(sel) {
+    if (!this.selectionMenu || !sel || sel.rangeCount === 0) return;
+    const range = sel.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) return;
+
+    this.selectionMenu.classList.remove('hidden');
+    const menuRect = this.selectionMenu.getBoundingClientRect();
+
+    let left = rect.left + (rect.width / 2) - (menuRect.width / 2);
+    let top = rect.top - menuRect.height - 8;
+
+    if (top < 50) {
+      top = rect.bottom + 8;
+    }
+
+    left = Math.max(10, Math.min(window.innerWidth - menuRect.width - 10, left));
+    top = Math.max(10, Math.min(window.innerHeight - menuRect.height - 10, top));
+
+    this.selectionMenu.style.left = `${Math.round(left)}px`;
+    this.selectionMenu.style.top = `${Math.round(top)}px`;
+  }
+
+  _hideSelectionMenu() {
+    if (this.selectionMenu) {
+      this.selectionMenu.classList.add('hidden');
+    }
+  }
+
+  _showHighlightActionMenu(mark) {
+    if (!this.highlightActionMenu || !mark) return;
+    const hlId = mark.dataset.highlightId;
+    const hl = this.highlights.find(h => h.id === hlId);
+    if (!hl) return;
+
+    this.activeHighlightId = hlId;
+
+    this.pagesContainer.querySelectorAll('.highlight-mark.active-target').forEach(m => m.classList.remove('active-target'));
+    this.pagesContainer.querySelectorAll(`[data-highlight-id="${hlId}"]`).forEach(m => m.classList.add('active-target'));
+
+    const dots = this.highlightActionMenu.querySelectorAll('.color-dot');
+    dots.forEach(d => {
+      d.classList.toggle('active', d.dataset.color === hl.color);
+    });
+
+    this.highlightActionMenu.classList.remove('hidden');
+    const menuRect = this.highlightActionMenu.getBoundingClientRect();
+    const markRect = mark.getBoundingClientRect();
+
+    let left = markRect.left + (markRect.width / 2) - (menuRect.width / 2);
+    let top = markRect.top - menuRect.height - 8;
+
+    if (top < 50) {
+      top = markRect.bottom + 8;
+    }
+
+    left = Math.max(10, Math.min(window.innerWidth - menuRect.width - 10, left));
+    top = Math.max(10, Math.min(window.innerHeight - menuRect.height - 10, top));
+
+    this.highlightActionMenu.style.left = `${Math.round(left)}px`;
+    this.highlightActionMenu.style.top = `${Math.round(top)}px`;
+  }
+
+  _hideHighlightActionMenu() {
+    if (this.highlightActionMenu) {
+      this.highlightActionMenu.classList.add('hidden');
+    }
+    this.activeHighlightId = null;
+    this.pagesContainer.querySelectorAll('.highlight-mark.active-target').forEach(m => m.classList.remove('active-target'));
+  }
+
+  _getDocStorageKey(prefix = 'hl') {
+    if (this.docFingerprint) {
+      return `smoothpdf_${prefix}_fp_${this.docFingerprint}`;
+    }
+    if (this.pdfUrl) {
+      const cleanUrl = this.pdfUrl.split('#')[0];
+      return `smoothpdf_${prefix}_url_${this._hashString(cleanUrl)}`;
+    }
+    const title = (this.docTitle ? this.docTitle.textContent : '') || 'document';
+    const size = this.pdfData ? this.pdfData.byteLength : (this.totalPages || 0);
+    return `smoothpdf_${prefix}_file_${this._hashString(title + '_' + size)}`;
+  }
+
+  _hashString(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash).toString(36);
+  }
+
+  async _loadHighlights() {
+    try {
+      const key = this._getDocStorageKey('hl');
+      const res = await this._storageGet(key);
+      if (res && Array.isArray(res[key])) {
+        this.highlights = res[key];
+        this._renderAllHighlights();
+      } else {
+        this.highlights = [];
+      }
+    } catch (e) {
+      console.warn('Load highlights error:', e);
+      this.highlights = [];
+    }
+  }
+
+  async _saveHighlights() {
+    try {
+      const key = this._getDocStorageKey('hl');
+      await this._storageSet({ [key]: this.highlights });
+    } catch (e) {
+      console.warn('Save highlights error:', e);
+    }
+  }
+
+  async _loadSavedPosition() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const explicitPage = params.get('page') || (window.location.hash.match(/page=(\d+)/) ? window.location.hash.match(/page=(\d+)/)[1] : null);
+      if (explicitPage) return;
+
+      const key = this._getDocStorageKey('pos');
+      const res = await this._storageGet(key);
+      const saved = res ? res[key] : null;
+      if (!saved || !saved.page) return;
+
+      const targetPage = Math.max(1, Math.min(saved.page, this.totalPages));
+      if (targetPage === 1 && (!saved.offsetRatio || saved.offsetRatio < 0.05)) {
+        return;
+      }
+
+      setTimeout(() => {
+        const pageDiv = document.getElementById(`page-container-${targetPage}`);
+        if (pageDiv) {
+          const pageTop = pageDiv.offsetTop;
+          const targetY = Math.round(pageTop + ((saved.offsetRatio || 0) * pageDiv.offsetHeight));
+          this.container.scrollTop = targetY;
+          if (this.smoothScroll) {
+            this.smoothScroll.scrollTo(targetY, { immediate: true });
+          }
+          this._setCurrentPageNumber(targetPage);
+          this._showToast(`Đã khôi phục vị trí đọc: Trang ${targetPage}/${this.totalPages}`, 2000);
+        }
+      }, 80);
+    } catch (e) {
+      console.warn('Load saved position error:', e);
+    }
+  }
+
+  _saveReadingPosition() {
+    if (this.totalPages <= 0) return;
+    try {
+      const key = this._getDocStorageKey('pos');
+      const curPageDiv = document.getElementById(`page-container-${this.currentPage}`);
+      let offsetRatio = 0;
+      if (curPageDiv && curPageDiv.offsetHeight > 0) {
+        const pageTop = curPageDiv.offsetTop;
+        const currentScroll = this.container.scrollTop;
+        offsetRatio = Math.max(0, Math.min(1, (currentScroll - pageTop) / curPageDiv.offsetHeight));
+      }
+      const data = {
+        page: this.currentPage,
+        offsetRatio: offsetRatio,
+        scale: this.scaleMode,
+        timestamp: Date.now()
+      };
+      this._storageSet({ [key]: data });
+    } catch (e) {
+      console.warn('Save reading position error:', e);
+    }
+  }
+
+  async _storageGet(key) {
+    try {
+      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+        return await chrome.storage.local.get(key);
+      }
+      const val = localStorage.getItem(key);
+      return val ? { [key]: JSON.parse(val) } : {};
+    } catch (e) {
+      console.warn('Storage get error:', e);
+      return {};
+    }
+  }
+
+  async _storageSet(items) {
+    try {
+      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+        await chrome.storage.local.set(items);
+        return;
+      }
+      for (const [k, v] of Object.entries(items)) {
+        localStorage.setItem(k, JSON.stringify(v));
+      }
+    } catch (e) {
+      console.warn('Storage set error:', e);
+    }
   }
 
   downloadFile() {
