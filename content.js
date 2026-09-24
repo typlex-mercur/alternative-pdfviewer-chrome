@@ -5,6 +5,89 @@
 (function () {
   'use strict';
 
+  // Canvas LMS (VNU / Instructure) Protection Engine:
+  // Automatically blocks heavy in-page CanvaDocs preview iframes that crash Chrome on 100MB+ / 900-page textbooks!
+  function initCanvasLmsGuard() {
+    const host = window.location.hostname.toLowerCase();
+    const isLms = host.includes('uet.vnu.edu.vn') || host.includes('vnu.edu.vn') || host.includes('instructure.com');
+    if (!isLms) return;
+
+    // Check if this is a file view page
+    const path = window.location.pathname.toLowerCase();
+    const isFilePage = path.includes('/files/') || path.includes('/modules/items/');
+    if (!isFilePage) return;
+
+    const blockPreview = () => {
+      // Find CanvaDocs / LMS preview iframes
+      const iframes = document.querySelectorAll(
+        'iframe.canvadocs_iframe, iframe#doc_preview, iframe#file_preview, iframe[src*="viewer.html"], iframe[src*="canvadoc"], iframe[src*="/preview"]'
+      );
+
+      iframes.forEach((frame) => {
+        const src = (frame.getAttribute('src') || '').toLowerCase();
+        if (src.includes('chrome-extension://')) return;
+
+        console.log('[SmoothPDF] Đã chặn iframe xem trước của Canvas LMS để bảo vệ bộ nhớ hệ thống.');
+        const parent = frame.parentElement;
+        frame.remove();
+
+        if (parent && !parent.querySelector('.smoothpdf-lms-guard-banner')) {
+          const downloadUrl = `${window.location.href.split(/[?#]/)[0]}/download?download_frd=1`;
+          const banner = document.createElement('div');
+          banner.className = 'smoothpdf-lms-guard-banner';
+          banner.style.cssText = `
+            padding: 30px 20px;
+            margin: 20px auto;
+            max-width: 760px;
+            background: #f8fafc;
+            border: 2px dashed #6366f1;
+            border-radius: 12px;
+            text-align: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          `;
+          banner.innerHTML = `
+            <div style="font-size: 36px; margin-bottom: 10px;">⚡</div>
+            <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #0f172a; font-weight: 700;">
+              SmoothPDF: Đã chặn chế độ nạp trước của LMS để bảo vệ RAM
+            </h3>
+            <p style="margin: 0 0 16px 0; font-size: 14px; color: #475569; line-height: 1.5;">
+              Tài liệu này có thể có dung lượng rất lớn (ví dụ: sách giáo trình 150 MB / gần 900 trang).<br/>
+              Trình đọc mặc định của LMS sẽ nạp toàn bộ vào web gây <b>tràn 100% RAM</b> và đơ máy tính.
+            </p>
+            <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
+              <a href="${downloadUrl}" style="
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 22px;
+                background: #4f46e5;
+                color: #ffffff;
+                text-decoration: none;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 14px;
+                box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+              ">
+                📥 Tải file trực tiếp về máy (An toàn, không tốn RAM)
+              </a>
+            </div>
+          `;
+          parent.appendChild(banner);
+        }
+      });
+    };
+
+    blockPreview();
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', blockPreview);
+    }
+    const observer = new MutationObserver(blockPreview);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+  }
+
+  initCanvasLmsGuard();
+
   const DOWNLOAD_KEYWORDS = [
     'tải về',
     'tải xuống',
