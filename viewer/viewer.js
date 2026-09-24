@@ -517,12 +517,71 @@ class SmoothPdfViewer {
               this._renderQueue.splice(idx, 1);
             }
           }
+          // Recycle offscreen page canvases if memory pool is full (>8 pages rendered)
+          if (this.renderedPages.size > 8 && Math.abs(pageNum - this.currentPage) > 3) {
+            this.unrenderPage(pageNum);
+          }
         }
       });
     }, {
       root: this.container,
       rootMargin: '100% 0px 100% 0px'
     });
+  }
+
+  unrenderPage(pageNum) {
+    if (!this.renderedPages.has(pageNum)) return;
+
+    const pageDiv = document.getElementById(`page-container-${pageNum}`);
+    if (!pageDiv) return;
+
+    // 1. Release heavy GPU/RAM backing bitmap immediately (0x0 deallocates Skia/GPU texture)
+    const canvas = pageDiv.querySelector('canvas');
+    if (canvas) {
+      canvas.width = 0;
+      canvas.height = 0;
+    }
+
+    // 2. Clear textLayer DOM nodes
+    const textLayer = pageDiv.querySelector('.textLayer, .text-layer');
+    if (textLayer) {
+      textLayer.innerHTML = '';
+      delete textLayer.dataset.renderedScale;
+    }
+
+    // 3. Restore loading skeleton placeholder
+    const skeleton = pageDiv.querySelector('.page-loading-skeleton');
+    if (skeleton) {
+      skeleton.style.display = 'flex';
+    }
+
+    this.renderedPages.delete(pageNum);
+  }
+
+  cleanupOffscreenPages() {
+    if (!this.totalPages || this.renderedPages.size <= 8) return;
+
+    const containerRect = this.container.getBoundingClientRect();
+    const vh = this.container.clientHeight || window.innerHeight;
+    const buffer = vh * 2.5; // keep 2.5 screen heights above & below viewport
+
+    const toUnrender = [];
+    this.renderedPages.forEach((pageNum) => {
+      // Keep current page and immediate neighbors rendered
+      if (Math.abs(pageNum - this.currentPage) <= 3) return;
+
+      const pageDiv = document.getElementById(`page-container-${pageNum}`);
+      if (!pageDiv) return;
+
+      const rect = pageDiv.getBoundingClientRect();
+      const isVisibleOrNear = (rect.bottom >= containerRect.top - buffer) && 
+                              (rect.top <= containerRect.bottom + buffer);
+      if (!isVisibleOrNear) {
+        toUnrender.push(pageNum);
+      }
+    });
+
+    toUnrender.forEach((p) => this.unrenderPage(p));
   }
 
   queuePageRender(pageNum) {
@@ -563,6 +622,7 @@ class SmoothPdfViewer {
     if (this._scrollRafId) return;
     this._scrollRafId = requestAnimationFrame(() => {
       this._updateCurrentPageNumber();
+      this.cleanupOffscreenPages();
       this._scrollRafId = null;
     });
 
@@ -703,21 +763,27 @@ class SmoothPdfViewer {
 
     if (!this.pdfDoc || this.totalPages <= 0) return;
 
-    // Load text of all pages in parallel if not cached
-    const loadPromises = [];
+    // Load text of pages in controlled batches of 25 to prevent memory spikes on large PDFs
+    const uncachedPages = [];
     for (let i = 1; i <= this.totalPages; i++) {
       if (!this.pageTextContents.has(i)) {
-        loadPromises.push(
-          this.pdfDoc.getPage(i).then(page => page.getTextContent()).then(tc => {
-            this.pageTextContents.set(i, tc);
-          }).catch(err => {
-            console.warn(`Failed to extract text from page ${i}:`, err);
-          })
-        );
+        uncachedPages.push(i);
       }
     }
-    if (loadPromises.length > 0) {
-      await Promise.all(loadPromises);
+
+    const BATCH_SIZE = 25;
+    for (let i = 0; i < uncachedPages.length; i += BATCH_SIZE) {
+      if (this.searchQuery !== q) return; // User typed something else or cancelled
+      const batch = uncachedPages.slice(i, i + BATCH_SIZE);
+      await Promise.all(batch.map(async (pageNum) => {
+        try {
+          const page = await this.pdfDoc.getPage(pageNum);
+          const tc = await page.getTextContent();
+          this.pageTextContents.set(pageNum, tc);
+        } catch (err) {
+          console.warn(`Failed to extract text from page ${pageNum}:`, err);
+        }
+      }));
     }
 
     // Check if query changed while loading
@@ -983,11 +1049,14 @@ class SmoothPdfViewer {
     const lowerUrl = url.toLowerCase();
     const isAttachmentUrl = lowerUrl.includes('response-content-disposition') ||
                             lowerUrl.includes('disposition=attachment') ||
-                            lowerUrl.includes('download_frd=1') ||
+                            lowerUrl.includes('disposition%3dattachment') ||
+                            lowerUrl.includes('download_frd') ||
                             lowerUrl.includes('export=download') ||
                             lowerUrl.includes('action=download') ||
-                            lowerUrl.includes('download=1') ||
-                            lowerUrl.includes('dl=1');
+                            lowerUrl.includes('download=') ||
+                            lowerUrl.includes('dl=1') ||
+                            (lowerUrl.includes('/files/') && lowerUrl.includes('/download')) ||
+                            (lowerUrl.includes('/courses/') && lowerUrl.includes('/files/'));
 
     if (isAttachmentUrl) {
       console.log('[SmoothPDF] URL parameter indicates attachment download, triggering direct download.');
@@ -1058,6 +1127,10 @@ class SmoothPdfViewer {
       console.warn('Direct PDF load failed, trying background proxy:', err);
       if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
         chrome.runtime.sendMessage({ action: 'fetchPdf', url: url }, (res) => {
+          if (res && res.isAttachment) {
+            console.log('[SmoothPDF] File is attachment or large (>30MB), handled by native download.');
+            return;
+          }
           if (res && res.success && res.dataUrl) {
             this.loadPdfData(res.dataUrl, filename);
           } else {
@@ -1281,13 +1354,21 @@ class SmoothPdfViewer {
 
       const canvas = el.querySelector('canvas');
       if (canvas) {
+        canvas.width = 0;
+        canvas.height = 0;
         canvas.style.width = '100%';
         canvas.style.height = '100%';
+      }
+
+      const skeleton = el.querySelector('.page-loading-skeleton');
+      if (skeleton) {
+        skeleton.style.display = 'flex';
       }
 
       const tl = el.querySelector('.textLayer, .text-layer');
       if (tl) {
         tl.innerHTML = '';
+        delete tl.dataset.renderedScale;
         tl.style.width = `${pageWidth}px`;
         tl.style.height = `${pageHeight}px`;
         tl.style.setProperty('--scale-factor', String(this.currentScale));

@@ -41,7 +41,7 @@ async function setupRedirectRules() {
         type: 'allow'
       },
       condition: {
-        regexFilter: '(?:[?&]|%26|%3[fF])(?:response-content-disposition|disposition|download_frd|export=download|action=download|download=)',
+        regexFilter: '(?:[?&]|%26|%3[fF])(?:response-content-disposition|disposition|download_frd|export=download|action=download|download=)|\\/files\\/\\d+\\/download|\\/courses\\/\\d+\\/files',
         resourceTypes: ['main_frame']
       }
     };
@@ -97,21 +97,23 @@ function isPdfDownloadUrl(url) {
 
   // 1. S3 / Cloud presigned download parameters (e.g. response-content-disposition=attachment)
   if (
-    lower.includes('response-content-disposition=attachment') ||
-    lower.includes('response-content-disposition%3dattachment') ||
-    lower.includes('response-content-disposition')
+    lower.includes('response-content-disposition') ||
+    lower.includes('response-content-disposition%3d')
   ) {
     return true;
   }
 
-  // 2. Common download query parameters
+  // 2. Common download query parameters & LMS paths
   if (
     lower.includes('disposition=attachment') ||
     lower.includes('disposition%3dattachment') ||
-    lower.includes('download_frd=1') ||
-    lower.includes('download=1') ||
-    lower.includes('download=true') ||
-    lower.includes('action=download')
+    lower.includes('download_frd') ||
+    lower.includes('download=') ||
+    lower.includes('dl=1') ||
+    lower.includes('action=download') ||
+    lower.includes('export=download') ||
+    (lower.includes('/files/') && lower.includes('/download')) ||
+    (lower.includes('/courses/') && lower.includes('/files/'))
   ) {
     return true;
   }
@@ -258,6 +260,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.action === 'fetchPdf') {
+    if (isPdfDownloadUrl(request.url)) {
+      console.log('[SmoothPDF] fetchPdf called with download URL, routing directly to Chrome download manager.');
+      chrome.downloads.download({ url: request.url, saveAs: false });
+      if (sender && sender.tab && sender.tab.id) {
+        chrome.tabs.remove(sender.tab.id, () => {
+          if (chrome.runtime.lastError) {}
+        });
+      }
+      sendResponse({ success: true, isAttachment: true });
+      return true;
+    }
+
     fetch(request.url)
       .then(async (response) => {
         if (!response.ok) {
@@ -266,7 +280,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         // Check if server marked this as an attachment download
         const disposition = response.headers.get('content-disposition') || '';
-        if (disposition.toLowerCase().includes('attachment')) {
+        const isAttachment = disposition.toLowerCase().includes('attachment');
+        const contentLength = parseInt(response.headers.get('content-length') || '0', 10);
+
+        // If file is explicitly an attachment or larger than 30MB, NEVER buffer into RAM as Base64!
+        if (isAttachment || contentLength > 30 * 1024 * 1024) {
+          console.log('[SmoothPDF] File is attachment or large (>30MB), routing directly to Chrome download manager.');
           let filename = '';
           const match = disposition.match(/filename\*?=['"]?(?:UTF-8'')?([^;"']+)['"]?/i);
           if (match && match[1]) {
@@ -287,6 +306,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }
 
         const blob = await response.blob();
+
+        // Secondary check for chunked responses without content-length header
+        if (blob.size > 30 * 1024 * 1024) {
+          console.log('[SmoothPDF] Blob exceeds 30MB, routing directly to native download to protect system memory.');
+          chrome.downloads.download({ url: request.url, saveAs: false });
+          if (sender && sender.tab && sender.tab.id) {
+            chrome.tabs.remove(sender.tab.id, () => {
+              if (chrome.runtime.lastError) {}
+            });
+          }
+          sendResponse({ success: true, isAttachment: true });
+          return;
+        }
+
         const reader = new FileReader();
         reader.onloadend = () => {
           sendResponse({ success: true, dataUrl: reader.result });
